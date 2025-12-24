@@ -1,0 +1,28 @@
+# Node / build
+node_modules/
+dist/
+build/
+
+# Three.js build / local libs
+js-r179
+js-r179/
+js-r179.js
+
+# IDE - WebStorm / IntelliJ
+.idea/
+*.iml
+
+# VS Code (ha később megnyitnád)
+.vscode/
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Logs
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+
+# Env
+.env
