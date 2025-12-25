@@ -1,0 +1,235 @@
+<!DOCTYPE html>
+<html lang="hu">
+
+<head>
+    <meta charset=utf-8>
+    <title>Three.js Blender Geometry Example</title>
+    <style>
+        body { margin: 0; overflow: hidden }
+        canvas { width: 100%; height: 100% }
+    </style>
+    <link rel="stylesheet" href="css/common.css">
+</head>
+
+<body>
+
+<script async src="./dist/es-module-shims.js"></script>
+<script type="importmap">
+    {
+        "imports": {
+            "three": "./js-r179/build/three.module.js",
+            "lil-gui": "./js-r179/examples/jsm/libs/lil-gui.module.min.js",
+            "tween": "./js-r179/examples/jsm/libs/tween.module.js",
+            "trackballcontrols": "./js-r179/examples/jsm/controls/TrackballControls.js"
+        }
+    }
+</script>
+
+<script type="module">
+    import * as THREE from 'three';
+    import * as TWEEN from 'tween';
+    import { TrackballControls } from 'trackballcontrols';
+    import { GUI } from 'lil-gui';
+    import { buildWorld } from './js/buildWorld.js';
+    import { buildLight } from './js/buildLight.js';
+    import { initHelpOverlay } from './js/helpOverlay.js';
+    import { initKeyboard } from './js/keyboard.js';
+    import { showHideAxisHelper } from './js/keyboard.js';
+    import { showHideSpotlightHelper } from './js/keyboard.js';
+    import { isDayLight } from './js/keyboard.js';
+    import { resetCamera } from './js/keyboard.js';
+
+    // Globális változók
+    let WIDTH, HEIGHT, aspectRatio;
+    let scene, camera;
+    let renderer;
+    let trackballcontrols, guiControls;
+
+    let meshController = function () {
+        this.showAxisHelper = false;
+        this.showSpotlightHelper = false;
+        this.isDayLight = true;
+
+        this.resetCamera = function() {
+            resetCamera(scene, camera);
+        };
+    };
+
+    init();
+
+    async function init() {
+        // Böngésző ablakméret lekérése és méretarány számítása
+        HEIGHT = window.innerHeight;
+        WIDTH = window.innerWidth;
+        aspectRatio = WIDTH / HEIGHT;
+
+        // Színtér létrehozása
+        scene = new THREE.Scene();
+        let sceneAxisHelper = new THREE.AxesHelper( 10 );
+        scene.add( sceneAxisHelper );
+
+        addControlGui();
+
+        // Renderer létrehozása
+        buildRender();
+
+        // Kamera létrehozása
+        buildCamera();
+        buildCameraControls();
+
+        //Objektumok létrehozása
+        await buildWorld(scene, meshController);
+
+        //Fények létrehozáa
+        //console.log('Scene children:', scene.children.map(o => o.name));
+        buildLight(scene, meshController);
+
+        // Az ablak átméretezése esetén visszahívható függvény megadása
+        window.addEventListener( 'resize', handleWindowResize, false );
+
+        window.addEventListener('keydown', (e) => {
+            if (e.key.toLowerCase() === 'i') {
+                gui.domElement.style.display =
+                    gui.domElement.style.display === 'none' ? 'block' : 'block';
+            }
+        });
+
+        //Megjelenítés és állapot beállítása
+        applyGuiState(scene);
+
+        initHelpOverlay();
+        initKeyboard(scene, camera, meshController);
+
+        render();
+        animate();
+    }
+
+    function addControlGui( ) {
+        guiControls = new meshController();
+        let gui = new GUI( { autoPlace: false } );
+
+        const info = {text: "Press 'i' to show keyboard shortcuts"};
+        const infoFolder = gui.addFolder('Info');
+        infoFolder.add(info, 'text')
+            .name('')
+            .listen();
+
+        gui.add(guiControls, 'showAxisHelper')
+            .name('Show axis helper')
+            .onChange((value) => {
+                showHideAxisHelper(scene, value);
+            });
+
+        gui.add(guiControls, 'showSpotlightHelper')
+            .name('Show spotlight helper')
+            .onChange((value) => {
+                showHideSpotlightHelper(scene, value);
+            });
+
+        gui.add(guiControls, 'isDayLight')
+            .name('Is daylight?')
+            .onChange((value) => {
+                isDayLight(scene, value);
+            });
+
+        gui.add(guiControls, 'resetCamera').name('Reset Camera');
+
+        gui.domElement.style.position = 'absolute';
+        gui.domElement.style.top = '0px';
+        gui.domElement.style.right = '0px';
+        document.body.appendChild( gui.domElement );
+    }
+
+    function applyGuiState(scene) {
+        showHideAxisHelper(scene, guiControls.showAxisHelper);
+        showHideSpotlightHelper(scene, guiControls.showSpotlightHelper);
+        isDayLight(scene, guiControls.isDayLight);
+    }
+
+    function handleWindowResize() {
+        // Az ablak átméretezése esetén a kamera vetítési paraméterek újraszámolása
+        HEIGHT = window.innerHeight;
+        WIDTH = window.innerWidth;
+        renderer.setSize( WIDTH, HEIGHT );
+        camera.aspect = WIDTH / HEIGHT;
+        camera.updateProjectionMatrix();
+
+        render();
+    }
+
+    function animate() {
+        // Újabb képkocka rajzolásának kérése.
+        // Maximálisan 60 FPS-t biztosít a rendszer.
+        requestAnimationFrame(animate);
+
+        TWEEN.update();
+        trackballcontrols.update();
+
+        render();
+    }
+
+    function render() {
+        renderer.render(scene, camera);
+    }
+
+    function buildRender() {
+        renderer = new THREE.WebGLRenderer( { antialias: true } );
+        renderer.setSize( WIDTH, HEIGHT );
+        renderer.setClearColor( 0x202020 );
+        document.body.appendChild( renderer.domElement );
+    }
+
+    function buildCamera() {
+        camera = new THREE.PerspectiveCamera( 75, aspectRatio, 0.1, 1000 );
+        resetCamera(scene, camera);
+    }
+
+    function buildCameraControls() {
+        trackballcontrols = new TrackballControls( camera, renderer.domElement );
+        trackballcontrols.rotateSpeed = 3.0;
+        trackballcontrols.panSpeed = 0.5;
+    }
+
+    /*
+    function buildLight() {
+        let lightA = new THREE.AmbientLight( 0x404040, Math.PI );
+        scene.add( lightA );
+
+        let mainSpotLight = new THREE.SpotLight( 0xffffff, 900 );
+        mainSpotLight.name = 'mainSpotLight';
+        mainSpotLight.position.set( 30, 30, 30 );
+        mainSpotLight.angle = Math.PI / 4;
+        scene.add( mainSpotLight );
+
+        let mainSpotLightHelper = new THREE.SpotLightHelper( mainSpotLight );
+        scene.add( mainSpotLightHelper );
+
+        let lampeLeftSpotLight = new THREE.SpotLight( 0x333333, 0 );
+        lampeLeftSpotLight.name = 'lampeLeftSpotLight';
+        lampeLeftSpotLight.position.set( 0, 5.8, 0 );
+        lampeLeftSpotLight.angle = Math.PI / 3;
+        lampeLeftSpotLight.penumbra = 0.3;    // lágy perem
+        const lampeLeft = scene.getObjectByName('lampeLeft');
+        lampeLeft.add( lampeLeftSpotLight );
+
+        let target = new THREE.Object3D();
+        target.position.set(0, 0, 0);
+        lampeLeft.add(target);
+        lampeLeftSpotLight.target = target;
+
+        let lampeLeftSpotLightHelper = new THREE.SpotLightHelper( lampeLeftSpotLight );
+        lampeLeft.add( lampeLeftSpotLightHelper );
+    }
+    */
+
+</script>
+
+<div id="hud">
+    <div><strong>Név:</strong> Németh Balázs</div>
+    <div><strong>NEPTUN:</strong> MC4JL5</div>
+    <div><strong>Szak:</strong> Programtervező informatikus Bsc.</div>
+    <div><strong>Tanév:</strong> 2025/2026 ősz</div>
+</div>
+
+</body>
+</html>

@@ -1,0 +1,12 @@
+#hud {
+    position: absolute;
+    top: 10px;
+    left: 10px;
+    color: #ffffff;
+    font-family: Arial, sans-serif;
+    font-size: 14px;
+    background: rgba(0, 0, 0, 0.5);
+    padding: 8px 12px;
+    border-radius: 6px;
+    pointer-events: none;
+}
