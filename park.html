@@ -29,15 +29,14 @@
     import * as THREE from 'three';
     import * as TWEEN from 'tween';
     import { TrackballControls } from 'trackballcontrols';
-    import { GUI } from 'lil-gui';
     import { buildWorld } from './js/buildWorld.js';
     import { buildLight } from './js/buildLight.js';
     import { initHelpOverlay } from './js/helpOverlay.js';
     import { initKeyboard } from './js/keyboard.js';
-    import { showHideAxisHelper } from './js/keyboard.js';
-    import { showHideSpotlightHelper } from './js/keyboard.js';
-    import { isDayLight } from './js/keyboard.js';
     import { resetCamera } from './js/keyboard.js';
+    import { initEvents } from './js/events.js';
+    import { addControlGui } from './js/gui.js';
+    import { applyGuiState } from './js/gui.js';
 
     // Globális változók
     let WIDTH, HEIGHT, aspectRatio;
@@ -49,6 +48,10 @@
         this.showAxisHelper = false;
         this.showSpotlightHelper = false;
         this.isDayLight = true;
+        this.daylightIntensitiy = 900;
+        this.showLeftLamp = true;
+        this.showRightLamp = true;
+        this.showWell = true;
 
         this.resetCamera = function() {
             resetCamera(scene, camera);
@@ -65,85 +68,40 @@
 
         // Színtér létrehozása
         scene = new THREE.Scene();
-        let sceneAxisHelper = new THREE.AxesHelper( 10 );
-        scene.add( sceneAxisHelper );
 
-        addControlGui();
+        //GUI kontrolok létrehozása
+        meshController = new meshController();
+        let gui = addControlGui(scene, meshController);
 
         // Renderer létrehozása
         buildRender();
 
-        // Kamera létrehozása
+        //Kamera létrehozása
         buildCamera();
+
+        //Kamera ctrl beállítások
         buildCameraControls();
 
         //Objektumok létrehozása
         await buildWorld(scene, meshController);
 
         //Fények létrehozáa
-        //console.log('Scene children:', scene.children.map(o => o.name));
         buildLight(scene, meshController);
+
+        //Event kezelés
+        initEvents(scene, gui);
 
         // Az ablak átméretezése esetén visszahívható függvény megadása
         window.addEventListener( 'resize', handleWindowResize, false );
 
-        window.addEventListener('keydown', (e) => {
-            if (e.key.toLowerCase() === 'i') {
-                gui.domElement.style.display =
-                    gui.domElement.style.display === 'none' ? 'block' : 'block';
-            }
-        });
-
         //Megjelenítés és állapot beállítása
-        applyGuiState(scene);
+        applyGuiState(scene, meshController);
 
         initHelpOverlay();
         initKeyboard(scene, camera, meshController);
 
         render();
         animate();
-    }
-
-    function addControlGui( ) {
-        guiControls = new meshController();
-        let gui = new GUI( { autoPlace: false } );
-
-        const info = {text: "Press 'i' to show keyboard shortcuts"};
-        const infoFolder = gui.addFolder('Info');
-        infoFolder.add(info, 'text')
-            .name('')
-            .listen();
-
-        gui.add(guiControls, 'showAxisHelper')
-            .name('Show axis helper')
-            .onChange((value) => {
-                showHideAxisHelper(scene, value);
-            });
-
-        gui.add(guiControls, 'showSpotlightHelper')
-            .name('Show spotlight helper')
-            .onChange((value) => {
-                showHideSpotlightHelper(scene, value);
-            });
-
-        gui.add(guiControls, 'isDayLight')
-            .name('Is daylight?')
-            .onChange((value) => {
-                isDayLight(scene, value);
-            });
-
-        gui.add(guiControls, 'resetCamera').name('Reset Camera');
-
-        gui.domElement.style.position = 'absolute';
-        gui.domElement.style.top = '0px';
-        gui.domElement.style.right = '0px';
-        document.body.appendChild( gui.domElement );
-    }
-
-    function applyGuiState(scene) {
-        showHideAxisHelper(scene, guiControls.showAxisHelper);
-        showHideSpotlightHelper(scene, guiControls.showSpotlightHelper);
-        isDayLight(scene, guiControls.isDayLight);
     }
 
     function handleWindowResize() {
@@ -176,6 +134,8 @@
         renderer = new THREE.WebGLRenderer( { antialias: true } );
         renderer.setSize( WIDTH, HEIGHT );
         renderer.setClearColor( 0x202020 );
+        renderer.shadowMap.enabled = true;
+        renderer.shadowMap.type = THREE.PCFSoftShadowMap;
         document.body.appendChild( renderer.domElement );
     }
 
@@ -189,38 +149,6 @@
         trackballcontrols.rotateSpeed = 3.0;
         trackballcontrols.panSpeed = 0.5;
     }
-
-    /*
-    function buildLight() {
-        let lightA = new THREE.AmbientLight( 0x404040, Math.PI );
-        scene.add( lightA );
-
-        let mainSpotLight = new THREE.SpotLight( 0xffffff, 900 );
-        mainSpotLight.name = 'mainSpotLight';
-        mainSpotLight.position.set( 30, 30, 30 );
-        mainSpotLight.angle = Math.PI / 4;
-        scene.add( mainSpotLight );
-
-        let mainSpotLightHelper = new THREE.SpotLightHelper( mainSpotLight );
-        scene.add( mainSpotLightHelper );
-
-        let lampeLeftSpotLight = new THREE.SpotLight( 0x333333, 0 );
-        lampeLeftSpotLight.name = 'lampeLeftSpotLight';
-        lampeLeftSpotLight.position.set( 0, 5.8, 0 );
-        lampeLeftSpotLight.angle = Math.PI / 3;
-        lampeLeftSpotLight.penumbra = 0.3;    // lágy perem
-        const lampeLeft = scene.getObjectByName('lampeLeft');
-        lampeLeft.add( lampeLeftSpotLight );
-
-        let target = new THREE.Object3D();
-        target.position.set(0, 0, 0);
-        lampeLeft.add(target);
-        lampeLeftSpotLight.target = target;
-
-        let lampeLeftSpotLightHelper = new THREE.SpotLightHelper( lampeLeftSpotLight );
-        lampeLeft.add( lampeLeftSpotLightHelper );
-    }
-    */
 
 </script>
 

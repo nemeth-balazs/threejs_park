@@ -11,6 +11,9 @@ export function initHelpOverlay() {
         S – Show/hide spotlight helpers<br>
         D – Is daylight?<br>
         R – Reset camera<br>
+        1 - Show left lamp<br>
+        2 - Show right lamp<br>
+        3 - Show well<br>
     `;
 
     helpDiv.style.position = 'absolute';

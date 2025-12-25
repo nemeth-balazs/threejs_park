@@ -27,11 +27,23 @@ export function initKeyboard(scene, camera, meshController) {
                 break;
             case 'd':
                 meshControllerRef.isDayLight = !meshControllerRef.isDayLight;
-                isDayLight(sceneRef, meshControllerRef.isDayLight);
+                isDayLight(sceneRef, meshControllerRef.daylightIntensitiy, meshControllerRef.isDayLight);
                 break;
             case 's':
                 meshControllerRef.showSpotlightHelper = !meshControllerRef.showSpotlightHelper;
                 showHideSpotlightHelper(sceneRef, meshControllerRef.showSpotlightHelper);
+                break;
+            case '1':
+                meshControllerRef.showLeftLamp = !meshControllerRef.showLeftLamp;
+                showLeftLamp(sceneRef, meshControllerRef.showLeftLamp);
+                break;
+            case '2':
+                meshControllerRef.showRightLamp = !meshControllerRef.showRightLamp;
+                showRightLamp(sceneRef, meshControllerRef.showRightLamp);
+                break;
+            case '3':
+                meshControllerRef.showWell = !meshControllerRef.showWell;
+                showWell(sceneRef, meshControllerRef.showWell);
                 break;
         }
     });
@@ -53,17 +65,21 @@ export function showHideSpotlightHelper(scene, show) {
     });
 }
 
-export function isDayLight(scene, isdaylight) {
+export function isDayLight(scene, daylightIntensitiy, isdaylight) {
     const mainSpotLight = scene.getObjectByName('mainSpotLight');
     const lampeLeftSpotLight = scene.getObjectByName('lampeLeftSpotLight');
     const lampeRightSpotLight = scene.getObjectByName('lampeRightSpotLight');
+    const textSpotLight = scene.getObjectByName('textSpotLight');
 
     if (isdaylight) {
         if (mainSpotLight !== undefined) {
-            mainSpotLight.intensity = 900;}
+            mainSpotLight.intensity = daylightIntensitiy;}
 
         if (lampeLeftSpotLight !== undefined) {
             lampeLeftSpotLight.intensity = 0;}
+
+        if (textSpotLight !== undefined) {
+            textSpotLight.intensity = 0;}
 
         if (lampeRightSpotLight !== undefined) {
             tweenSpotLightIntensity(lampeRightSpotLight, 0, 1000);}
@@ -73,10 +89,23 @@ export function isDayLight(scene, isdaylight) {
             mainSpotLight.intensity = 90;}
 
         if (lampeLeftSpotLight !== undefined) {
-            lampeLeftSpotLight.intensity = 500;}
+            lampeLeftSpotLight.intensity = 150;}
+
+        if (textSpotLight !== undefined) {
+            textSpotLight.intensity = 100;}
 
         if (lampeRightSpotLight !== undefined) {
-            tweenSpotLightIntensity(lampeRightSpotLight, 500, 5000);}
+            tweenSpotLightIntensity(lampeRightSpotLight, 50, 5000);}
+    }
+
+    setFog(scene, isdaylight);
+}
+
+export function setFog(scene, isDay) {
+    if (isDay) {
+        scene.fog = new THREE.FogExp2(0xcfd8dc, 0.008);
+    } else {
+        scene.fog = new THREE.FogExp2(0x202020, 0.04);
     }
 }
 
@@ -99,4 +128,18 @@ export function resetCamera(scene, camera) {
     camera.position.set( 15, 15, 15 );
     camera.lookAt( scene.position);
     //trackballcontrols.reset();
+}
+export function showLeftLamp(scene, value) {
+    const lampeLeft = scene.getObjectByName('lampeLeft');
+    lampeLeft.visible = value;
+}
+
+export function showRightLamp(scene, value) {
+    const lampeRight = scene.getObjectByName('lampeRight');
+    lampeRight.visible = value;
+}
+
+export function showWell(scene, value) {
+    const well = scene.getObjectByName('well');
+    well.visible = value;
 }

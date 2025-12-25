@@ -8,6 +8,8 @@ export function buildLight(scene, meshController) {
 
     buildLightLampeSpotLight(scene, meshController,'lampeLeftSpotLight', 'lampeLeft');
     buildLightLampeSpotLight(scene, meshController,'lampeRightSpotLight', 'lampeRight');
+
+    buildLightWelcomeTextSpotLight(scene);
 }
 
 function buildLightAmbient(scene) {
@@ -16,9 +18,16 @@ function buildLightAmbient(scene) {
 }
 
 function buildLightmainSpotLight(scene, meshController) {
-    let mainSpotLight = new THREE.SpotLight(0xffffff, 900);
+    let mainSpotLight = new THREE.SpotLight(0xffffff, meshController.daylightIntensitiy);
     mainSpotLight.name = 'mainSpotLight';
-    mainSpotLight.position.set(30, 30, 30);
+    mainSpotLight.position.set(20, 30, 20);
+    mainSpotLight.castShadow = true;
+    mainSpotLight.distance = 200;
+    mainSpotLight.shadow.mapSize.width = 2048;
+    mainSpotLight.shadow.mapSize.height = 2048;
+    mainSpotLight.shadow.camera.near = 1;
+    mainSpotLight.shadow.camera.far = 100;
+    mainSpotLight.shadow.camera.fov = 30;
 
     let target = new THREE.Object3D();
     target.position.set(0, 0, 0);
@@ -40,7 +49,8 @@ function buildLightLampeSpotLight(scene, meshController, spotlightname, lampenam
     const lampe = scene.getObjectByName(lampename);
     if (!lampe) { console.error(`Lamp not found: ${lampename}`); return;}
 
-    let lampeSpotLight = new THREE.SpotLight( 0x333333, 0 );
+    let lampeSpotLight = new THREE.SpotLight( 0xffcc66, 0 );
+    lampeSpotLight.castShadow = true;
     lampeSpotLight.name = spotlightname;
     lampeSpotLight.position.set( 0, 5.8, 0 );
     lampeSpotLight.angle = Math.PI / 4;
@@ -57,4 +67,27 @@ function buildLightLampeSpotLight(scene, meshController, spotlightname, lampenam
     lampe.add( lampeSpotLightHelper );
 
     lampeSpotLightHelper.update();
+}
+
+function buildLightWelcomeTextSpotLight(scene) {
+
+    const textMesh = scene.getObjectByName('welcomeText');
+    if (!textMesh) { console.error(`Welcome text not found!`); return;}
+
+    const textSpotLight = new THREE.SpotLight(0xffffff, 2);
+    textSpotLight.name = 'textSpotLight';
+    textSpotLight.position.set(0, 1.5, -5);
+    textSpotLight.angle = Math.PI / 6;
+    textSpotLight.penumbra = 0.2;
+    textSpotLight.decay = 2;
+    textSpotLight.distance = 50;
+    textSpotLight.castShadow = true;
+
+    textSpotLight.target = textMesh;
+    scene.add(textSpotLight);
+    scene.add(textSpotLight.target);
+
+    const spotHelper = new THREE.SpotLightHelper(textSpotLight);
+    spotHelper.name = 'textSpotLightHelper';
+    scene.add(spotHelper);
 }
