@@ -46,6 +46,26 @@ export function initKeyboard(scene, camera, meshController) {
                 meshControllerRef.showWell = !meshControllerRef.showWell;
                 showWell(sceneRef, meshControllerRef.showWell);
                 break;
+            case '4':
+                meshControllerRef.showFlag = !meshControllerRef.showFlag;
+                showFlag(sceneRef, meshControllerRef.showFlag);
+                break;
+            case '5':
+                meshControllerRef.showFence = !meshControllerRef.showFence;
+                showFence(sceneRef, meshControllerRef.showFence);
+                break;
+            case '6':
+                meshControllerRef.showRoad = !meshControllerRef.showRoad;
+                showRoad(sceneRef, meshControllerRef.showRoad);
+                break;
+            case '7':
+                meshControllerRef.showBillboard = !meshControllerRef.showBillboard;
+                showBillboard(sceneRef, meshControllerRef.showBillboard);
+                break;
+            case '8':
+                meshControllerRef.showWelcomeText = !meshControllerRef.showWelcomeText;
+                showWelcomeText(sceneRef, meshControllerRef.showWelcomeText);
+                break;
         }
     });
 }
@@ -145,4 +165,29 @@ export function showRightLamp(scene, value) {
 export function showWell(scene, value) {
     const well = scene.getObjectByName('well');
     well.visible = value;
+}
+
+export function showFlag(scene, value) {
+    const flag = scene.getObjectByName('flag');
+    flag.visible = value;
+}
+
+export function showFence(scene, value) {
+    const fence = scene.getObjectByName('fence');
+    fence.visible = value;
+}
+
+export function showRoad(scene, value) {
+    const road = scene.getObjectByName('road');
+    road.visible = value;
+}
+
+export function showBillboard(scene, value) {
+    const billboard = scene.getObjectByName('billboard');
+    billboard.visible = value;
+}
+
+export function showWelcomeText(scene, value) {
+    const welcomeText = scene.getObjectByName('welcomeText');
+    welcomeText.visible = value;
 }

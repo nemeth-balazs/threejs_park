@@ -4,9 +4,15 @@ import { GUI } from "../js-r179/examples/jsm/libs/lil-gui.module.min.js";
 import { showHideAxisHelper } from './keyboard.js';
 import { showHideSpotlightHelper } from './keyboard.js';
 import { isDayLight } from './keyboard.js';
+
 import { showLeftLamp } from './keyboard.js';
 import { showRightLamp } from './keyboard.js';
 import { showWell } from './keyboard.js';
+import { showFlag } from './keyboard.js';
+import { showFence } from './keyboard.js';
+import { showRoad } from './keyboard.js';
+import { showBillboard } from './keyboard.js';
+import { showWelcomeText } from './keyboard.js';
 
 export function addControlGui( scene, guiControls) {
 
@@ -31,7 +37,7 @@ export function addControlGui( scene, guiControls) {
         });
 
     gui.add(guiControls, 'isDayLight')
-        .name('Is daylight?')
+        .name('Daylight')
         .onChange((value) => {
             isDayLight(scene, guiControls.daylightIntensitiy, value);
         });
@@ -54,6 +60,36 @@ export function addControlGui( scene, guiControls) {
             showWell(scene, value);
         });
 
+    gui.add(guiControls, 'showFlag')
+        .name('Show flag')
+        .onChange((value) => {
+            showFlag(scene, value);
+        });
+
+    gui.add(guiControls, 'showFence')
+        .name('Show fence')
+        .onChange((value) => {
+            showFence(scene, value);
+        });
+
+    gui.add(guiControls, 'showRoad')
+        .name('Show road')
+        .onChange((value) => {
+            showRoad(scene, value);
+        });
+
+    gui.add(guiControls, 'showBillboard')
+        .name('Show billboard')
+        .onChange((value) => {
+            showBillboard(scene, value);
+        });
+
+    gui.add(guiControls, 'showWelcomeText')
+        .name('Show welcome text')
+        .onChange((value) => {
+            showWelcomeText(scene, value);
+        });
+
     gui.add(guiControls, 'resetCamera').name('Reset Camera');
 
     gui.domElement.style.position = 'absolute';
@@ -72,4 +108,9 @@ export function applyGuiState(scene, guiControls) {
     showLeftLamp(scene, guiControls.showLeftLamp);
     showRightLamp(scene, guiControls.showRightLamp);
     showWell(scene, guiControls.showWell);
+    showFlag(scene, guiControls.showFlag);
+    showFence(scene, guiControls.showFence);
+    showRoad(scene, guiControls.showRoad);
+    showBillboard(scene, guiControls.showBillboard);
+    showWelcomeText(scene, guiControls.showWelcomeText);
 }
