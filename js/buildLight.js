@@ -91,3 +91,20 @@ function buildLightWelcomeTextSpotLight(scene) {
     spotHelper.name = 'textSpotLightHelper';
     scene.add(spotHelper);
 }
+
+let colorIndex = 0;
+const spotlightColors = [
+    0xff0000, // piros
+    0x0000ff, // kék
+    0x00ff00  // zöld
+];
+
+export function startTextSpotLightColorCycle(scene) {
+    const textSpotLight = scene.getObjectByName('textSpotLight');
+    if (!textSpotLight) return;
+
+    setInterval(() => {
+        colorIndex = (colorIndex + 1) % spotlightColors.length;
+        textSpotLight.color.setHex(spotlightColors[colorIndex]);
+    }, 1000); // 3 másodperc
+}

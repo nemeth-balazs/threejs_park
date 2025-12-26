@@ -20,8 +20,8 @@ function onKeyDown(e, scene, gui) {
     const textSpotLight = scene.getObjectByName('textSpotLight');
     if (!textSpotLight) return;
 
-    const fixedY = textSpotLight.position.y; // magasság fix
-    const fixedZ = textSpotLight.position.z; // előre irány fix
+    const fixedY = textSpotLight.position.y;
+    const fixedZ = textSpotLight.position.z;
 
     switch(e.key) {
         case 'ArrowLeft':
@@ -30,6 +30,12 @@ function onKeyDown(e, scene, gui) {
         case 'ArrowRight':
             textSpotLight.position.x += spotlightSpeed;
             break;
+    }
+
+    if (textSpotLight.position.x > 0){
+        textSpotLight.position.x = Math.min(textSpotLight.position.x, 15);
+    } else {
+        textSpotLight.position.x = Math.max(textSpotLight.position.x, -15);
     }
 
     textSpotLight.lookAt(new THREE.Vector3(textSpotLight.position.x, fixedY, fixedZ));

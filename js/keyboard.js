@@ -1,6 +1,7 @@
 import * as THREE from '../js-r179/build/three.module.js';
 import * as TWEEN from '../js-r179/examples/jsm/libs/tween.module.js';
 import { toggleHelp } from './helpOverlay.js';
+import { startTextSpotLightColorCycle } from './buildLight.js';
 
 let sceneRef = null;
 let cameraRef = null;
@@ -92,7 +93,9 @@ export function isDayLight(scene, daylightIntensitiy, isdaylight) {
             lampeLeftSpotLight.intensity = 150;}
 
         if (textSpotLight !== undefined) {
-            textSpotLight.intensity = 100;}
+            textSpotLight.intensity = 100;
+            startTextSpotLightColorCycle(scene);
+        }
 
         if (lampeRightSpotLight !== undefined) {
             tweenSpotLightIntensity(lampeRightSpotLight, 50, 5000);}
