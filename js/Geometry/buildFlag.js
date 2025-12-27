@@ -56,7 +56,7 @@ export function buildFlag(scene, meshController) {
     const flagTexture = textureLoader.load('assets/textures/flag.jpg');
     flagTexture.colorSpace = THREE.SRGBColorSpace;
 
-    const flagGeometry = new THREE.PlaneGeometry(3, 1.5, 10, 5);
+    const flagGeometry = new THREE.PlaneGeometry(3, 1.5, 20, 10);
     const flagMaterial = new THREE.MeshStandardMaterial({  map: flagTexture, side: THREE.DoubleSide});
     flagMaterial.roughness = 0.8;
     flagMaterial.metalness = 0.0;
@@ -64,11 +64,16 @@ export function buildFlag(scene, meshController) {
     const flagPlane = new THREE.Mesh(flagGeometry, flagMaterial);
     let flagAxisHelper = new THREE.AxesHelper( 1 );
     flagAxisHelper.visible = meshController.showAxisHelper;
+    flagPlane.name  = 'flagPlane';
     flagPlane.position.set(1.6, 5.5, 0);
     flagPlane.castShadow = true;
     flagPlane.geometry.translate(0.05, 0, 0);
     flagPlane.add(flagAxisHelper);
     flagGroup.add(flagPlane);
+
+    const positionAttr = flagGeometry.attributes.position;
+    const originalPositions = positionAttr.array.slice();
+    flagGeometry.userData.originalPositions = originalPositions;
 
     /* ===== Pozíció ===== */
     flagGroup.position.set(0, 0.3, -3);

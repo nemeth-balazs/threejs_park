@@ -4,6 +4,7 @@ import { GUI } from "../js-r179/examples/jsm/libs/lil-gui.module.min.js";
 import { showHideAxisHelper } from './keyboard.js';
 import { showHideSpotlightHelper } from './keyboard.js';
 import { isDayLight } from './keyboard.js';
+import { setWindVelocity } from './keyboard.js';
 
 import { showLeftLamp } from './keyboard.js';
 import { showRightLamp } from './keyboard.js';
@@ -40,6 +41,12 @@ export function addControlGui( scene, guiControls) {
         .name('Daylight')
         .onChange((value) => {
             isDayLight(scene, guiControls.daylightIntensitiy, value);
+        });
+
+    gui.add(guiControls, 'windVelocity', 0, 10, 0.1)
+        .name('Wind velocity')
+        .onChange((value) => {
+            setWindVelocity(scene, value);
         });
 
     gui.add(guiControls, 'showLeftLamp')
@@ -104,6 +111,7 @@ export function applyGuiState(scene, guiControls) {
     showHideAxisHelper(scene, guiControls.showAxisHelper);
     showHideSpotlightHelper(scene, guiControls.showSpotlightHelper);
     isDayLight(scene, guiControls.daylightIntensitiy, guiControls.isDayLight);
+    setWindVelocity(scene, guiControls.windVelocity);
 
     showLeftLamp(scene, guiControls.showLeftLamp);
     showRightLamp(scene, guiControls.showRightLamp);

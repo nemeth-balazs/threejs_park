@@ -37,18 +37,20 @@
     import { initEvents } from './js/events.js';
     import { addControlGui } from './js/gui.js';
     import { applyGuiState } from './js/gui.js';
+    import { animateFlagWind } from './js/animation.js';
 
     // Globális változók
     let WIDTH, HEIGHT, aspectRatio;
     let scene, camera;
     let renderer;
-    let trackballcontrols, guiControls;
+    let trackballcontrols;
 
     let meshController = function () {
         this.showAxisHelper = false;
         this.showSpotlightHelper = false;
         this.isDayLight = true;
         this.daylightIntensitiy = 900;
+        this.windVelocity = 3;
 
         this.showLeftLamp = true;
         this.showRightLamp = true;
@@ -122,12 +124,11 @@
     }
 
     function animate() {
-        // Újabb képkocka rajzolásának kérése.
-        // Maximálisan 60 FPS-t biztosít a rendszer.
         requestAnimationFrame(animate);
 
         TWEEN.update();
         trackballcontrols.update();
+        animateFlagWind(scene, meshController);
 
         render();
     }

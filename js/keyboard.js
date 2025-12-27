@@ -147,6 +147,11 @@ function tweenSpotLightIntensity(light, targetIntensity, duration) {
         .start();
 }
 
+export function setWindVelocity(scene, windVelocity) {
+
+
+}
+
 export function resetCamera(scene, camera) {
     camera.position.set( 15, 15, 15 );
     camera.lookAt( scene.position);
