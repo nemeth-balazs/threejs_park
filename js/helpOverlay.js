@@ -6,9 +6,10 @@ export function initHelpOverlay() {
     helpDiv.id = 'helpOverlay';
     helpDiv.innerHTML = `
         <b>Keyboard shortcuts</b><br><br>
-        Tip: Change to night mode to start animation!<br>
-        Tip: Use the left / right arrow to move the spotlight<br>
-        in front of the welcome text in night mode!<br>
+        Tip #1: Change to night mode to start animation!<br>
+        Tip #2: Use the left / right arrow to move the spotlight<br>
+            in front of the welcome text in night mode!<br>
+        Tip #3: Use the up / down arrow to rotate the flag<br>
         I – Toggle help<br>
         A – Show axis helpers<br>
         S – Show spotlight helpers<br>

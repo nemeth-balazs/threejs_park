@@ -5,6 +5,8 @@ import { showHideAxisHelper } from './keyboard.js';
 import { showHideSpotlightHelper } from './keyboard.js';
 import { isDayLight } from './keyboard.js';
 import { setWindVelocity } from './keyboard.js';
+import { LeftLampOn } from './keyboard.js';
+import { RightLampOn } from './keyboard.js';
 
 import { showLeftLamp } from './keyboard.js';
 import { showRightLamp } from './keyboard.js';
@@ -14,6 +16,8 @@ import { showFence } from './keyboard.js';
 import { showRoad } from './keyboard.js';
 import { showBillboard } from './keyboard.js';
 import { showWelcomeText } from './keyboard.js';
+
+
 
 export function addControlGui( scene, guiControls) {
 
@@ -47,6 +51,18 @@ export function addControlGui( scene, guiControls) {
         .name('Wind velocity')
         .onChange((value) => {
             setWindVelocity(scene, value);
+        });
+
+    gui.add(guiControls, 'LeftLampOn')
+        .name('Left lamp on')
+        .onChange((value) => {
+            LeftLampOn(scene, value);
+        });
+
+    gui.add(guiControls, 'RightLampOn')
+        .name('Right lamp on')
+        .onChange((value) => {
+            RightLampOn(scene, value);
         });
 
     gui.add(guiControls, 'showLeftLamp')

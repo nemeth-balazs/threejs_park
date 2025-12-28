@@ -6,11 +6,13 @@ import { startTextSpotLightColorCycle } from './buildLight.js';
 let sceneRef = null;
 let cameraRef = null;
 let meshControllerRef= null;
+let trackballcontrolsRef= null;
 
-export function initKeyboard(scene, camera, meshController) {
+export function initKeyboard(scene, camera, meshController, trackballcontrols) {
     sceneRef = scene;
     cameraRef = camera;
     meshControllerRef = meshController;
+    trackballcontrolsRef = trackballcontrols;
 
     window.addEventListener('keydown', (e) => {
         if (e.repeat) return;
@@ -24,7 +26,7 @@ export function initKeyboard(scene, camera, meshController) {
                 showHideAxisHelper(sceneRef, meshControllerRef.showAxisHelper );
                 break;
             case 'r':
-                resetCamera(sceneRef, cameraRef);
+                resetCamera(sceneRef, cameraRef, trackballcontrolsRef);
                 break;
             case 'd':
                 meshControllerRef.isDayLight = !meshControllerRef.isDayLight;
@@ -93,6 +95,7 @@ export function isDayLight(scene, daylightIntensitiy, isdaylight) {
     const textSpotLight = scene.getObjectByName('textSpotLight');
 
     if (isdaylight) {
+        scene.background = new THREE.Color(0x87CEEB);
         if (mainSpotLight !== undefined) {
             mainSpotLight.intensity = daylightIntensitiy;}
 
@@ -106,6 +109,7 @@ export function isDayLight(scene, daylightIntensitiy, isdaylight) {
             tweenSpotLightIntensity(lampeRightSpotLight, 0, 1000);}
     }
     else {
+        scene.background = new THREE.Color(0x101018);
         if (mainSpotLight !== undefined) {
             mainSpotLight.intensity = 90;}
 
@@ -126,37 +130,65 @@ export function isDayLight(scene, daylightIntensitiy, isdaylight) {
 
 export function setFog(scene, isDay) {
     if (isDay) {
-        scene.fog = new THREE.FogExp2(0xcfd8dc, 0.008);
+        scene.fog = new THREE.FogExp2(0xcfd8dc, 0.01);
     } else {
-        scene.fog = new THREE.FogExp2(0x202020, 0.04);
+        scene.fog = new THREE.FogExp2(0x202020, 0.06);
     }
 }
 
 function tweenSpotLightIntensity(light, targetIntensity, duration) {
+
     if (light._currentTween) {
         light._currentTween.stop();
+        light._currentTween = null;
     }
 
-    const obj = { intensity: light.intensity };
-    const tween = new TWEEN.Tween(obj)
+    const state = { intensity: light.intensity };
+
+    const tween = new TWEEN.Tween(state)
         .to({ intensity: targetIntensity }, duration)
         .easing(TWEEN.Easing.Bounce.InOut)
         .onUpdate(() => {
-            light.intensity = obj.intensity;
+            light.intensity = Math.max(0, state.intensity);
         })
-        .start();
+        .onComplete(() => {
+            light.intensity = targetIntensity;
+            light._currentTween = null;
+        });
+
+    light._currentTween = tween;
+    tween.start();
+}
+
+export function LeftLampOn(scene, on) {
+    const lampeLeftSpotLight = scene.getObjectByName('lampeLeftSpotLight');
+    lampeLeftSpotLight.intensity = on ? 150 : 0;
+}
+
+export function RightLampOn(scene, on) {
+    const light = scene.getObjectByName('lampeRightSpotLight');
+    if (!light) return;
+
+    if (on) {
+        tweenSpotLightIntensity(light, 50, 5000);
+    } else {
+        tweenSpotLightIntensity(light, 0, 800);
+    }
 }
 
 export function setWindVelocity(scene, windVelocity) {
-
-
 }
 
-export function resetCamera(scene, camera) {
+export function resetCamera(scene, camera, trackballcontrols) {
     camera.position.set( 15, 15, 15 );
     camera.lookAt( scene.position);
-    //trackballcontrols.reset();
+
+    if (trackballcontrols !== undefined) {
+        trackballcontrols.target.set(0, 0, 0);
+        trackballcontrols.update();
+    }
 }
+
 export function showLeftLamp(scene, value) {
     const lampeLeft = scene.getObjectByName('lampeLeft');
     lampeLeft.visible = value;

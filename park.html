@@ -51,6 +51,8 @@
         this.isDayLight = true;
         this.daylightIntensitiy = 900;
         this.windVelocity = 3;
+        this.LeftLampOn = false;
+        this.RightLampOn = false;
 
         this.showLeftLamp = true;
         this.showRightLamp = true;
@@ -76,6 +78,7 @@
 
         // Színtér létrehozása
         scene = new THREE.Scene();
+        scene.background = new THREE.Color(0x000000);
 
         //GUI kontrolok létrehozása
         meshController = new meshController();
@@ -106,7 +109,7 @@
         applyGuiState(scene, meshController);
 
         initHelpOverlay();
-        initKeyboard(scene, camera, meshController);
+        initKeyboard(scene, camera, meshController, trackballcontrols);
 
         render();
         animate();
@@ -148,7 +151,7 @@
 
     function buildCamera() {
         camera = new THREE.PerspectiveCamera( 75, aspectRatio, 0.1, 1000 );
-        resetCamera(scene, camera);
+        resetCamera(scene, camera, trackballcontrols);
     }
 
     function buildCameraControls() {
