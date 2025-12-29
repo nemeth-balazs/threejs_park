@@ -17,8 +17,6 @@ import { showRoad } from './keyboard.js';
 import { showBillboard } from './keyboard.js';
 import { showWelcomeText } from './keyboard.js';
 
-
-
 export function addControlGui( scene, guiControls) {
 
     let gui = new GUI( { autoPlace: false } );
@@ -128,6 +126,8 @@ export function applyGuiState(scene, guiControls) {
     showHideSpotlightHelper(scene, guiControls.showSpotlightHelper);
     isDayLight(scene, guiControls.daylightIntensitiy, guiControls.isDayLight);
     setWindVelocity(scene, guiControls.windVelocity);
+    LeftLampOn(scene, guiControls.LeftLampOn);
+    RightLampOn(scene, guiControls.RightLampOn);
 
     showLeftLamp(scene, guiControls.showLeftLamp);
     showRightLamp(scene, guiControls.showRightLamp);
